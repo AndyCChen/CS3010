@@ -61,6 +61,8 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 			mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 			exponent_bias--;
 		} while (abs((int) mantissa) != 1);
+
+		exponent_bias++;
 	} else if (power > 0) {
 		exponent_bias = 1;
 
@@ -68,6 +70,8 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 			mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 			exponent_bias++;
 		} while (abs((int) mantissa) != 1);
+
+		exponent_bias--;
 	} else {
 		mantissa = (decimal * pow(10, power)) / pow(2, 1);
 
@@ -78,6 +82,8 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 				mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 				exponent_bias++;
 			} while (abs((int) mantissa) != 1);
+
+			exponent_bias--;
 		} else {
 			exponent_bias = -1;
 
@@ -85,9 +91,10 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 				mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 				exponent_bias--;
 			} while (abs((int) mantissa) != 1);
+
+			exponent_bias ++;
 		}
 	}
-	exponent_bias--;
 
 	int biased_exponent = UNBIASED_EXPONENT + exponent_bias;
 
