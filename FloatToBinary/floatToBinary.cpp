@@ -9,7 +9,7 @@ const int BINARY_EXPONENT_BITS = 8;
 const int BINARY_MANTISSA_BITS = 23;
 
 void float_to_binary_scientific(double, int, char*, char*, char*);
-void float_to_binary();
+void float_to_binary(double, char*, char*, char*);
 void int_to_binary(int, char*, int);
 void fraction_to_binary(double, char*, int);
 
@@ -24,7 +24,6 @@ int main() {
 	cin >> input;
 
 	size_t exponent_position = input.find("e");
-	size_t decimal_position = input.find(".");
 
 	char signed_bit;
 	char *binary_exponent = new char[BINARY_EXPONENT_BITS + 1];
@@ -38,11 +37,11 @@ int main() {
 		double decimal = stod(decimal_string);
 		int power = stoi(power_string);
 
-		float_to_binary_scientific(decimal, power, &signed_bit ,binary_exponent, binary_mantissa);
+		float_to_binary_scientific(decimal, power, &signed_bit, binary_exponent, binary_mantissa);
 	}
 	// input is in a.b format 
-	else if (decimal_position != string::npos) {
-
+	else {
+		float_to_binary(stod(input), &signed_bit, binary_exponent, binary_mantissa);
 	}
 
 	cout << endl << "IEEE 754 single precision representation of " << input << " is: " << endl;
@@ -62,8 +61,6 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 			mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 			exponent_bias--;
 		} while (abs((int) mantissa) != 1);
-
-		exponent_bias++;	
 	} else if (power > 0) {
 		exponent_bias = 1;
 
@@ -71,12 +68,28 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 			mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
 			exponent_bias++;
 		} while (abs((int) mantissa) != 1);
-
-		exponent_bias--;
 	} else {
-		float_to_binary();
-		
+		mantissa = (decimal * pow(10, power)) / pow(2, 1);
+		cout << mantissa << endl;
+
+		if (mantissa < decimal) {
+			exponent_bias = 1;
+
+			do {
+				mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
+				exponent_bias++;
+			} while (abs((int) mantissa) != 1);
+		} else {
+			exponent_bias = -1;
+
+			do {
+				mantissa = (decimal * pow(10, power)) / pow(2, exponent_bias);
+				exponent_bias--;
+			} while (abs((int) mantissa) != 1);
+		}
 	}
+	cout << mantissa << endl;
+	exponent_bias--;
 
 	int biased_exponent = UNBIASED_EXPONENT + exponent_bias;
 
@@ -84,15 +97,13 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 	else if (decimal < 0) *signed_bit = '1';
 	int_to_binary(biased_exponent, binary_exponent, BINARY_EXPONENT_BITS + 1);
 	fraction_to_binary(abs(mantissa), binary_mantissa, BINARY_MANTISSA_BITS + 1);
-
-	/* cout << "Mantissa: " << mantissa << endl;
-	cout << "Fractional mantissa: " << fractional_mantissa << endl;
-	cout << "Base two power: " << exponent_bias << endl;
-	cout << "Biased Exponent: " << biased_exponent << endl; */
 }
 
-void float_to_binary() {
-
+void float_to_binary(double input, char *signed_bit, char *binary_exponent, char *binary_mantissa) {
+	int power = 0;
+	input = input * pow(10, power);
+	cout << input << endl;
+	float_to_binary_scientific(input, power, signed_bit, binary_exponent, binary_mantissa);
 }
 
 void int_to_binary(int number, char *binary, int size) {
