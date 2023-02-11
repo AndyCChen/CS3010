@@ -75,7 +75,11 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 	} else {
 		mantissa = (decimal * pow(10, power)) / pow(2, 1);
 
-		if (mantissa < decimal) {
+		if ((int) decimal == 1) {
+			exponent_bias = 0;
+			mantissa = decimal;
+		}
+		else if (mantissa < decimal && decimal > 1) {
 			exponent_bias = 1;
 
 			do {
@@ -133,11 +137,19 @@ void fraction_to_binary(double fraction, char *binary, int size) {
 	fraction = fraction > 1 ? fraction - (int) fraction : fraction;
 	double product = fraction;
 
-	for (int index = 0; index < size - 1; index++) {
-		product *= 2;
-		binary[index] = (int) product ? '1' : '0';
-		product = (int) product >= 1 ? product - 1 : product;
+	if (fraction == 1) {
+		for (int index = 0; index < size - 1; index++) {
+			binary[index] = '0';
+		}
 	}
+	else {
+		for (int index = 0; index < size - 1; index++) {
+			product *= 2;
+			binary[index] = (int) product ? '1' : '0';
+			product = (int) product >= 1 ? product - 1 : product;
+		}
+	}
+	
 
 	binary[size - 1] = '\0';
 }
