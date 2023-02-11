@@ -70,7 +70,6 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 		} while (abs((int) mantissa) != 1);
 	} else {
 		mantissa = (decimal * pow(10, power)) / pow(2, 1);
-		cout << mantissa << endl;
 
 		if (mantissa < decimal) {
 			exponent_bias = 1;
@@ -88,7 +87,6 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 			} while (abs((int) mantissa) != 1);
 		}
 	}
-	cout << mantissa << endl;
 	exponent_bias--;
 
 	int biased_exponent = UNBIASED_EXPONENT + exponent_bias;
@@ -102,7 +100,6 @@ void float_to_binary_scientific(double decimal, int power, char *signed_bit, cha
 void float_to_binary(double input, char *signed_bit, char *binary_exponent, char *binary_mantissa) {
 	int power = 0;
 	input = input * pow(10, power);
-	cout << input << endl;
 	float_to_binary_scientific(input, power, signed_bit, binary_exponent, binary_mantissa);
 }
 
