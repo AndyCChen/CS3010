@@ -6,13 +6,14 @@
 using namespace std;
 
 int handle_program_arguments(int, char*[]);
-float** read_input_file(string, int&);
-void gaussian_elimination(float**);
-void guassian_elimination_with_spp();
+double** read_input_file(string, int&);
+double* gaussian_elimination(double**, int);
+double* guassian_elimination_with_spp(double**, int);
 
 int main(int argc, char *argv[]) {
    int choice = handle_program_arguments(argc, argv);
-   float **matrix = nullptr;
+   double **matrix = nullptr;
+   double *solutions = nullptr;
    int size_n;
 
    switch(choice) {
@@ -25,6 +26,7 @@ int main(int argc, char *argv[]) {
          matrix = read_input_file(argv[1], size_n);
          
          if (matrix != nullptr) {
+            solutions = gaussian_elimination(matrix, size_n);
             for (int row = 0; row < size_n + 1; row++) {
                for (int col = 0; col < size_n; col++) {
                   cout << matrix[row][col] << " ";
@@ -32,7 +34,9 @@ int main(int argc, char *argv[]) {
                cout << endl;
             }
 
-
+            for (int row = 0; row < size_n; row++) {
+               cout << solutions[row] << " ";
+            }
          }
          
          break;
@@ -85,8 +89,8 @@ int handle_program_arguments(int argc, char *argv[]) {
    return 1;
 }
 
-float** read_input_file(string file_name, int &size_n) {
-   float **matrix = nullptr;
+double** read_input_file(string file_name, int &size_n) {
+   double **matrix = nullptr;
    string line;
    ifstream file (file_name);
 
@@ -99,10 +103,10 @@ float** read_input_file(string file_name, int &size_n) {
 
       // initialize matrix size
       size_n = stoi(line);
-      matrix = new float*[size_n + 1];
+      matrix = new double*[size_n + 1];
 
       for (int index = 0; index < size_n + 1; index++) {
-         matrix[index] = new float[size_n];
+         matrix[index] = new double[size_n];
       }
 
       // read values into matrix
@@ -131,3 +135,39 @@ float** read_input_file(string file_name, int &size_n) {
    return matrix;
 }
 
+double* gaussian_elimination(double **matrix, int size_n) {
+   for (int col_coefficient_index = 0; col_coefficient_index < size_n - 1; col_coefficient_index++) {
+      for (int row_coefficient_index = col_coefficient_index + 1; row_coefficient_index < size_n; row_coefficient_index++) {
+
+         // ratio to zero out a coefficient
+         double ratio = matrix[row_coefficient_index][col_coefficient_index] / matrix[col_coefficient_index][col_coefficient_index];
+
+         // zero out coefficients via forward elimination
+         for (int col = col_coefficient_index; col < size_n; col++) {
+            matrix[row_coefficient_index][col] = matrix[row_coefficient_index][col] - ratio * matrix[col_coefficient_index][col];
+         }
+
+         // apply elimnation to constants at bottom of the matrix
+         matrix[size_n][row_coefficient_index] = matrix[size_n][row_coefficient_index] - ratio * matrix[size_n][col_coefficient_index];
+      }
+   }
+
+   double *solutions = new double[size_n];
+   solutions[size_n - 1] = matrix[size_n][size_n - 1] / matrix[size_n - 1][size_n - 1];
+
+   for (int row = size_n - 2; row >= 0; row--) {
+      double sum = matrix[size_n][row];
+
+      for (int col = row + 1; col < size_n; col++) {
+         sum = sum - matrix[row][col] * solutions[col];
+      }
+
+      solutions[row] = sum / matrix[row][row];
+   }
+
+   return solutions;
+}
+
+double* guassian_elimination_with_spp(double **matrix, int size_n) {
+   
+}
